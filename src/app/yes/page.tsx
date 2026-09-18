@@ -30,7 +30,7 @@ function likelyNoWord(percentage: number) {
     const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className=' flex-col justify-center top-15 w-95 rounded-lg mb-5'>
-            <div className=' bg-green-500 align-middle text-center rounded'>
+            <div className=' bg-blue-500 align-middle text-center rounded'>
                 這圖片有 <h3>{v}％</h3> 機會是皮膚癌
                 <div className='text-m'>請放心!</div>
             </div>
@@ -42,7 +42,7 @@ function noWord(percentage: number) {
     const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className='flex-col justify-center top-15 w-95 rounded-lg mb-5'>
-            <div className=' bg-cyan-500 align-middle text-center rounded'>
+            <div className=' bg-blue-500 align-middle text-center rounded'>
                 這圖片只有 <h3>{v}％</h3> 機會是皮膚癌
                 <div className='text-m font-bold'>請放心!</div>
             </div>
