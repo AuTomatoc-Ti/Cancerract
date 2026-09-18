@@ -15,8 +15,8 @@ function useGetAllSearchParams() {
     return params;
 }
 
-function yesWord(percentage) {
-    const v = parseFloat(percentage + Math.random() * 5).toFixed(2);
+function yesWord(percentage: number) {
+    const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className='flex-col justify-center top-15 w-95 rounded-lg mb-5'>
             <div className=' bg-red-500 align-middle text-center rounded'>
@@ -26,8 +26,8 @@ function yesWord(percentage) {
         </div>
     );
 }
-function likelyNoWord(percentage) {
-    const v = parseFloat(percentage + Math.random() * 5).toFixed(2);
+function likelyNoWord(percentage: number) {
+    const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className=' flex-col justify-center top-15 w-95 rounded-lg mb-5'>
             <div className=' bg-green-500 align-middle text-center rounded'>
@@ -38,8 +38,8 @@ function likelyNoWord(percentage) {
     );
 }
 
-function noWord(percentage) {
-    const v = parseFloat(percentage + Math.random() * 5).toFixed(2);
+function noWord(percentage: number) {
+    const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className='flex-col justify-center top-15 w-95 rounded-lg mb-5'>
             <div className=' bg-cyan-500 align-middle text-center rounded'>
@@ -51,12 +51,11 @@ function noWord(percentage) {
 }
 
 
-export default function Yespage() {
+function YespageContent() {
     const [percentage, setPercentage] = useState(0);
     const router = useRouter();
     const para = useGetAllSearchParams();
     const submittedName = para.name;
-    const submittedImg = para.image;
     if (submittedName == "a.png") setPercentage(90);
     if (submittedName == "b.png") setPercentage(20);
     if (submittedName == "c.png") setPercentage(0);
@@ -67,7 +66,7 @@ export default function Yespage() {
         router.push("/home");
     }
 
-    let word = ''
+    let word: React.ReactNode = ''
     if (percentage == 90) {
         word = yesWord(percentage)
     }else if (percentage == 20){
@@ -86,5 +85,13 @@ export default function Yespage() {
                 確定
             </button>
         </div>
+    );
+}
+
+export default function Yespage() {
+    return (
+        <React.Suspense fallback={null}>
+            <YespageContent />
+        </React.Suspense>
     );
 }
