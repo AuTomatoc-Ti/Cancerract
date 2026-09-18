@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -52,13 +52,17 @@ function noWord(percentage: number) {
 
 
 function YespageContent() {
-    const [percentage, setPercentage] = useState(0);
     const router = useRouter();
     const para = useGetAllSearchParams();
     const submittedName = para.name;
-    if (submittedName == "a.png") setPercentage(90);
-    if (submittedName == "b.png") setPercentage(20);
-    if (submittedName == "c.png") setPercentage(0);
+    /* Derived from the file name instead of state: calling setState during render
+       (unguarded) made React throw "Too many re-renders", which crashed this page. */
+    const percentage = submittedName == "a.png" ? 90 : submittedName == "b.png" ? 20 : 0;
+    /* The result depends on ?name=, which a static export cannot know when it
+       prerenders this page, so render the panel only after mounting - otherwise
+       hydration fails against the prerendered "0 percent" HTML. */
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
 
     
 
@@ -67,12 +71,14 @@ function YespageContent() {
     }
 
     let word: React.ReactNode = ''
-    if (percentage == 90) {
-        word = yesWord(percentage)
-    }else if (percentage == 20){
-        word = likelyNoWord(percentage)
-    }else if (percentage == 0){
-        word = noWord(percentage)
+    if (mounted) {
+        if (percentage == 90) {
+            word = yesWord(percentage)
+        }else if (percentage == 20){
+            word = likelyNoWord(percentage)
+        }else if (percentage == 0){
+            word = noWord(percentage)
+        }
     }
 
     return (
