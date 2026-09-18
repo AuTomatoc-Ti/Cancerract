@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { CANCER_INFO, type CancerInfo } from "./cancerInfo";
+import { CANCER_INFO, SAMPLES, type CancerInfo, type SampleCase } from "./cancerInfo";
 
 function useGetAllSearchParams() {
     const searchParams = useSearchParams();
@@ -65,11 +65,13 @@ function YespageContent() {
     const router = useRouter();
     const para = useGetAllSearchParams();
     const submittedName = para.name;
-    const sample: CancerInfo | undefined = CANCER_INFO[submittedName];
+    const sample: SampleCase | undefined = SAMPLES[submittedName];
+    /* Description is looked up by cancer type, so it is defined once in cancerInfo.ts. */
+    const info: CancerInfo | undefined = sample ? CANCER_INFO[sample.type] : undefined;
     /* Derived from the file name instead of state: calling setState during render
        (unguarded) made React throw "Too many re-renders", which crashed this page.
-       The bundled samples (public/sample) count as high risk. */
-    const percentage = sample || submittedName == "a.png" ? 90 : submittedName == "b.png" ? 50 : 0;
+       Samples carry their own risk percentage (high chance = red, moderate = orange). */
+    const percentage = sample ? sample.percentage : submittedName == "a.png" ? 90 : submittedName == "b.png" ? 50 : 0;
     /* The result depends on ?name=, which a static export cannot know when it
        prerenders this page, so render the panel only after mounting - otherwise
        hydration fails against the prerendered "0 percent" HTML. */
@@ -96,7 +98,7 @@ function YespageContent() {
     return (
         <div className='app flex flex-col md:mt-0 py-5'>
             {word}
-            {mounted && sample && cancerInfoWord(sample)}
+            {mounted && info && cancerInfoWord(info)}
             <button
                 className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-50 rounded'
                 onClick={handleSubmit}
