@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { CANCER_INFO, type CancerInfo } from "./cancerInfo";
 
 function useGetAllSearchParams() {
     const searchParams = useSearchParams();
@@ -51,13 +52,33 @@ function noWord(percentage: number) {
 }
 
 
+function cancerInfoWord(info: CancerInfo) {
+    return (
+        <div className='w-95 rounded-lg bg-white/90 text-left mb-5 p-4'>
+            <h3 className='font-bold mb-2'>
+                {info.nameZh} · {info.nameEn}
+            </h3>
+            <ul className='list-disc pl-5 space-y-2 text-sm'>
+                {info.points.map((point) => (
+                    <li key={point.en}>
+                        {point.zh}
+                        <div className='text-gray-600'>{point.en}</div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
 function YespageContent() {
     const router = useRouter();
     const para = useGetAllSearchParams();
     const submittedName = para.name;
+    const sample: CancerInfo | undefined = CANCER_INFO[submittedName];
     /* Derived from the file name instead of state: calling setState during render
-       (unguarded) made React throw "Too many re-renders", which crashed this page. */
-    const percentage = submittedName == "a.png" ? 90 : submittedName == "b.png" ? 20 : 0;
+       (unguarded) made React throw "Too many re-renders", which crashed this page.
+       The bundled samples (public/sample) count as high risk. */
+    const percentage = sample || submittedName == "a.png" ? 90 : submittedName == "b.png" ? 50 : 0;
     /* The result depends on ?name=, which a static export cannot know when it
        prerenders this page, so render the panel only after mounting - otherwise
        hydration fails against the prerendered "0 percent" HTML. */
@@ -74,7 +95,7 @@ function YespageContent() {
     if (mounted) {
         if (percentage == 90) {
             word = yesWord(percentage)
-        }else if (percentage == 20){
+        }else if (percentage == 50){
             word = likelyNoWord(percentage)
         }else if (percentage == 0){
             word = noWord(percentage)
@@ -82,8 +103,9 @@ function YespageContent() {
     }
 
     return (
-        <div className='app flex flex-col md:mt-0'>
+        <div className='app flex flex-col md:mt-0 py-5'>
             {word}
+            {mounted && sample && cancerInfoWord(sample)}
             <button
                 className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-50 rounded'
                 onClick={handleSubmit}
