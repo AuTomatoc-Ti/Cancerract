@@ -16,24 +16,15 @@ function useGetAllSearchParams() {
     return params;
 }
 
-function yesWord(percentage: number) {
+/* Result bands: >=70 red, 50-70 orange, below 50 blue. The 50-70 band shows the
+   same information as the >=70 band - only the background differs. */
+function yesWord(percentage: number, background: string) {
     const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
     return (
         <div className='flex-col justify-center top-15 w-95 rounded-lg mb-5'>
-            <div className=' bg-red-500 align-middle text-center rounded'>
+            <div className={` ${background} align-middle text-center rounded`}>
                 這圖片有 <h3>{v}％</h3> 機會是皮膚癌
                 <div className='font-bold align-middle '>請盡快約見醫生！</div>
-            </div>
-        </div>
-    );
-}
-function likelyNoWord(percentage: number) {
-    const v = parseFloat(String(percentage + Math.random() * 5)).toFixed(2);
-    return (
-        <div className=' flex-col justify-center top-15 w-95 rounded-lg mb-5'>
-            <div className=' bg-blue-500 align-middle text-center rounded'>
-                這圖片有 <h3>{v}％</h3> 機會是皮膚癌
-                <div className='text-m'>請放心!</div>
             </div>
         </div>
     );
@@ -93,11 +84,11 @@ function YespageContent() {
 
     let word: React.ReactNode = ''
     if (mounted) {
-        if (percentage == 90) {
-            word = yesWord(percentage)
-        }else if (percentage == 50){
-            word = likelyNoWord(percentage)
-        }else if (percentage == 0){
+        if (percentage >= 70) {
+            word = yesWord(percentage, 'bg-red-500')
+        }else if (percentage >= 50){
+            word = yesWord(percentage, 'bg-orange-500')
+        }else{
             word = noWord(percentage)
         }
     }
